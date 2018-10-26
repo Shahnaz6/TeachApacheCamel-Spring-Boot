@@ -4,6 +4,7 @@ import com.learncamel.alert.MailProcessor;
 import com.learncamel.domain.Country;
 import com.learncamel.exception.DataException;
 import com.learncamel.processor.BuildSQLProcessor;
+import com.learncamel.processor.ResponseProcessor;
 import com.learncamel.service.CountryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.camel.LoggingLevel;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 
 @Component
 @Slf4j
@@ -34,6 +34,9 @@ public class CountryRestRoute extends RouteBuilder {
 
     @Autowired
     MailProcessor mailProcessor;
+
+    @Autowired
+    ResponseProcessor responseProcessor;
 
     @Override
     public void configure() throws Exception {
@@ -59,6 +62,7 @@ public class CountryRestRoute extends RouteBuilder {
                 .to("{{dbNode}}")
                 .to("{{selectNode}}")
                 .convertBodyTo(String.class)
+                .process(responseProcessor)
                 .log("Inserted Country is : ${body}" );
 
 
